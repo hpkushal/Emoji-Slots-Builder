@@ -61,7 +61,9 @@ Emoji Slots Builder is a web-based application that allows users to create, cust
    - Realistic spinning animation
    - Win calculation and display
    - Bet management
-   - Credit system
+   - Credit system with $1,000 starting balance
+   - Win condition at $30,000
+   - Game over when balance reaches $0
    - Special feature triggers
 
 ### Differentiating Features
@@ -81,6 +83,11 @@ Emoji Slots Builder is a web-based application that allows users to create, cust
    - Share slot machines on social media
    - Embed options for websites and blogs
    - Direct link sharing
+
+4. **RTP Implementation**
+   - Realistic Return to Player mechanics
+   - Configurable RTP that affects gameplay
+   - Balance between player enjoyment and challenge
 
 ## User Flows
 
@@ -104,10 +111,14 @@ Emoji Slots Builder is a web-based application that allows users to create, cust
 1. User navigates to the Game Directory
 2. User browses or searches for a slot machine
 3. User clicks "Play Now" on a game card
-4. User sets bet amount
-5. User clicks "SPIN" to play
-6. System displays the spin result and any winnings
-7. User can continue playing or return to the directory
+4. User starts with $1,000 in credits
+5. User sets bet amount
+6. User clicks "SPIN" to play
+7. System displays the spin result and any winnings
+8. User continues playing until:
+   - Reaching $30,000 (win condition)
+   - Running out of credits (game over)
+   - Choosing to exit the game
 
 ## Technical Requirements
 
@@ -139,6 +150,7 @@ Emoji Slots Builder is a web-based application that allows users to create, cust
    - Average session duration: 10+ minutes
    - Return rate: 30%+ weekly return
    - Number of slot machines created per user: 2+
+   - Percentage of users reaching win condition: 15%+
 
 2. **Growth**
    - New user acquisition: 10%+ month-over-month
@@ -157,6 +169,7 @@ The product will be considered successful if:
 2. Average session duration exceeds 15 minutes
 3. At least 20% of users return weekly
 4. User satisfaction rating of 4.5/5 or higher
+5. At least 10% of players reach the $30,000 win condition
 
 ## Roadmap
 
@@ -166,6 +179,9 @@ The product will be considered successful if:
 - Basic gameplay mechanics
 - Theme customization
 - Local storage persistence
+- $1,000 starting balance
+- $30,000 win condition
+- RTP implementation
 
 ### Phase 2: Enhanced Features (Next 3 Months)
 

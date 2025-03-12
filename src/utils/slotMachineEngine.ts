@@ -203,8 +203,16 @@ export const generateSpin = (config: SlotConfig, bet: number): SpinResult => {
     };
   }
   
+  // Apply RTP adjustment
+  // This is a simplified approach to implement RTP
+  // In a real casino game, RTP is achieved over millions of spins
+  // Here we'll use a random number to determine if this spin should be a winner
+  // based on the configured RTP
+  const shouldWin = Math.random() < config.rtp;
+  
   // Generate random symbols for each position based on weights
-  const reelPositions = generateReelPositions(config);
+  // If shouldWin is true, we'll try to generate a winning combination
+  const reelPositions = generateReelPositions(config, shouldWin);
   
   // Calculate wins based on paylines
   const winningLines = calculateWinningLines(reelPositions, config, bet);
@@ -243,12 +251,70 @@ export const generateSpin = (config: SlotConfig, bet: number): SpinResult => {
  * Generates random symbols for each reel position based on configured weights
  * 
  * @param config - The slot configuration
+ * @param preferWinning - Whether to try to generate a winning combination
  * @returns 2D array of symbolIds
  */
-const generateReelPositions = (config: SlotConfig): string[][] => {
+const generateReelPositions = (config: SlotConfig, preferWinning: boolean = false): string[][] => {
   const { rows, cols, symbolWeights } = config.reels;
   const positions: string[][] = [];
   
+  // If preferWinning is true, we'll try to create a winning pattern
+  // This is a simplified approach to implement RTP
+  if (preferWinning && Math.random() < 0.7) { // 70% chance to create a winning pattern when RTP dictates a win
+    // Choose a random payline
+    const paylineIndex = Math.floor(Math.random() * config.paylines.length);
+    const payline = config.paylines[paylineIndex];
+    
+    // Choose a random symbol (preferring higher value symbols)
+    const symbolPool = config.symbols
+      .filter(s => !s.isScatter) // Don't use scatters for forced wins
+      .sort((a, b) => {
+        // Higher RTP means more chance of higher value symbols
+        const rtpFactor = Math.min(config.rtp * 2, 1); // Scale RTP for symbol selection
+        if (Math.random() < rtpFactor) {
+          return b.payout[3] - a.payout[3]; // Sort by payout value (higher first)
+        }
+        return 0; // Random order
+      });
+    
+    const winSymbol = symbolPool[0]?.id || Object.keys(symbolWeights)[0];
+    const wildSymbol = config.symbols.find(s => s.isWild)?.id;
+    
+    // Initialize positions array
+    for (let i = 0; i < rows; i++) {
+      positions[i] = [];
+      for (let j = 0; j < cols; j++) {
+        // Default to random symbol
+        const reelSymbols: string[] = [];
+        Object.keys(symbolWeights).forEach(symbolId => {
+          const weight = Math.floor(symbolWeights[symbolId]);
+          for (let k = 0; k < weight; k++) {
+            reelSymbols.push(symbolId);
+          }
+        });
+        
+        const randomIndex = Math.floor(Math.random() * reelSymbols.length);
+        positions[i][j] = reelSymbols[randomIndex];
+      }
+    }
+    
+    // Place winning symbols on the chosen payline
+    payline.positions.forEach(([row, col], index) => {
+      // For the first 3 positions, use the winning symbol or wild
+      if (index < 3) {
+        // Sometimes use wild instead of the win symbol
+        positions[row][col] = Math.random() < 0.3 && wildSymbol ? wildSymbol : winSymbol;
+      }
+      // For remaining positions, random chance of continuing the pattern
+      else if (Math.random() < config.rtp) {
+        positions[row][col] = Math.random() < 0.3 && wildSymbol ? wildSymbol : winSymbol;
+      }
+    });
+    
+    return positions;
+  }
+  
+  // Standard random generation (non-winning focused)
   // Create a weighted selection array for each reel
   // This simulates real slot machines where each reel has different probabilities
   for (let i = 0; i < rows; i++) {

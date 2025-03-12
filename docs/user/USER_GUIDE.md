@@ -14,6 +14,7 @@ Welcome to the Emoji Slots Builder! This guide will help you get started with cr
   - [Betting Options](#betting-options)
   - [Theme](#theme)
 - [Playing a Slot Machine](#playing-a-slot-machine)
+  - [Game Rules](#game-rules)
   - [Placing Bets](#placing-bets)
   - [Spinning the Reels](#spinning-the-reels)
   - [Understanding Wins](#understanding-wins)
@@ -157,6 +158,13 @@ To play a slot machine, click the "Play Now" button on a game card in the Game D
 
 ![Slot Machine](../images/slot-machine.png)
 
+### Game Rules
+
+- **Starting Balance**: You begin with $1,000 in credits
+- **Win Condition**: Reach $30,000 in credits to win the game
+- **Game Over**: If your balance reaches $0, the game ends
+- **RTP**: The configured Return to Player percentage affects your chances of winning
+
 ### Placing Bets
 
 1. Select your bet amount using:
@@ -205,6 +213,8 @@ Click the menu button (three lines) in the top left to access:
 - **RTP Setting**: An RTP around 0.95-0.97 provides a good balance between player enjoyment and challenge
 - **Theme Consistency**: Choose symbols and colors that match your theme for a cohesive experience
 - **Testing**: Always test your slot machine in Preview Mode before saving
+- **Betting Strategy**: Start with smaller bets to extend your gameplay time
+- **Win Goal**: Focus on reaching the $30,000 win goal by managing your bets carefully
 
 ## Troubleshooting
 

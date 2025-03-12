@@ -384,46 +384,111 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.5s;
+  color: white;
+  text-align: center;
+  animation: jackpotPulse 2s infinite;
 }
 
 .jackpot-celebration h2 {
-  color: gold;
   font-size: 48px;
-  text-shadow: 0 0 10px gold;
   margin-bottom: 20px;
-  animation: jackpot-pulse 1s infinite alternate;
+  color: gold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
 .jackpot-celebration p {
-  color: white;
   font-size: 24px;
   margin-bottom: 30px;
 }
 
 .jackpot-celebration button {
-  padding: 15px 30px;
+  padding: 12px 24px;
+  font-size: 18px;
   background-color: gold;
-  color: black;
+  color: #333;
   border: none;
   border-radius: 30px;
-  font-size: 18px;
-  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 0 20px gold;
+  transition: all 0.3s;
 }
 
-@keyframes jackpot-pulse {
-  0% { transform: scale(1); text-shadow: 0 0 10px gold; }
-  100% { transform: scale(1.1); text-shadow: 0 0 30px gold; }
+.jackpot-celebration button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+/* Game Win Celebration Styles */
+.game-win-celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  text-align: center;
+  animation: confettiBackground 10s infinite;
+}
+
+.game-win-celebration h2 {
+  font-size: 52px;
+  margin-bottom: 20px;
+  color: #00e676;
+  text-shadow: 0 0 15px rgba(0, 230, 118, 0.8);
+  animation: winPulse 1.5s infinite;
+}
+
+.game-win-celebration p {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+.game-win-celebration button {
+  margin-top: 30px;
+  padding: 15px 30px;
+  font-size: 20px;
+  background-color: #00e676;
+  color: #000;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(0, 230, 118, 0.6);
+}
+
+.game-win-celebration button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 230, 118, 0.9);
+}
+
+@keyframes winPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes confettiBackground {
+  0% { background-color: rgba(0, 0, 0, 0.9); }
+  25% { background-color: rgba(0, 50, 100, 0.9); }
+  50% { background-color: rgba(50, 0, 100, 0.9); }
+  75% { background-color: rgba(100, 50, 0, 0.9); }
+  100% { background-color: rgba(0, 0, 0, 0.9); }
 }
 
 /* Confetti animation for big wins */

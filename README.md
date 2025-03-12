@@ -17,6 +17,8 @@ Emoji Slots Builder is a feature-rich application that allows users to create, c
 - **Theme Inspirations**: Choose from pre-designed themes like Fruits, Animals, Ocean, Space, and Fantasy
 - **Symbol Management**: Add, edit, and remove symbols with custom payouts and weights
 - **Responsive Design**: Works on desktop and mobile devices
+- **Game Mechanics**: Start with $1,000 and try to reach $30,000 to win the game
+- **RTP Implementation**: Realistic Return to Player mechanics that affect gameplay
 
 ## 🚀 Getting Started
 
@@ -75,6 +77,18 @@ Comprehensive documentation is available in the `docs` directory:
 │   └── index.tsx        # Application entry point
 └── package.json         # Project dependencies and scripts
 ```
+
+## 🎮 Game Rules
+
+- **Starting Balance**: Players begin with $1,000 in credits
+- **Win Condition**: Reach $30,000 to win the game
+- **Game Over**: If your balance reaches $0, the game ends
+- **RTP (Return to Player)**: The configured RTP affects your chances of winning on each spin
+- **Special Features**:
+  - **Wild Symbols**: Substitute for other symbols to help form winning combinations
+  - **Scatter Symbols**: Trigger free spins when 3 or more appear
+  - **Jackpot Symbols**: Get 5 on a payline to win the jackpot prize
+  - **Multipliers**: Randomly multiply your winnings
 
 ## 🛠️ Available Scripts
 

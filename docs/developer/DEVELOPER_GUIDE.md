@@ -10,6 +10,7 @@ This guide provides detailed information for developers who want to understand, 
 - [Core Components](#core-components)
 - [Slot Machine Engine](#slot-machine-engine)
 - [State Management](#state-management)
+- [Game Mechanics](#game-mechanics)
 - [Adding New Features](#adding-new-features)
 - [Testing](#testing)
 - [Performance Considerations](#performance-considerations)
@@ -88,6 +89,8 @@ Renders a playable slot machine based on a provided configuration. Key features 
 - Bet management
 - Payline visualization
 - Special feature handling (free spins, jackpots)
+- Game win/loss conditions
+- Balance management
 
 ### GameDirectory Component (`GameDirectory.tsx`)
 
@@ -177,7 +180,7 @@ export type SpinResult = {
 
 - `validateSlotConfig(config: SlotConfig)`: Validates a slot configuration for correctness
 - `generateSpin(config: SlotConfig, bet: number)`: Generates a random spin result based on the configuration
-- `generateReelPositions(config: SlotConfig)`: Generates random symbols for each reel position based on weights
+- `generateReelPositions(config: SlotConfig, preferWinning: boolean)`: Generates random symbols for each reel position based on weights and RTP
 - `calculateWinningLines(reelPositions: string[][], config: SlotConfig, bet: number)`: Calculates winning lines based on the reel positions
 - `checkTriggeredFeatures(reelPositions: string[][], config: SlotConfig, bet: number)`: Checks for triggered special features
 - `calculateTheoreticalRTP(config: SlotConfig)`: Calculates the theoretical Return to Player percentage
@@ -192,6 +195,83 @@ The application uses React's built-in state management with hooks:
 - `useRef`: For DOM references (used in animations)
 
 Global state is managed in the `App` component and passed down to child components as props. Persistent storage is handled using the browser's localStorage API.
+
+## Game Mechanics
+
+### Starting Balance
+
+Players begin with $1,000 in credits. This is set in the `SlotMachine` component:
+
+```typescript
+const [credits, setCredits] = useState(1000); // Starting credits
+```
+
+### Win Condition
+
+Players win the game when they reach $30,000 in credits. This is implemented in the `SlotMachine` component:
+
+```typescript
+// Win threshold
+const WIN_THRESHOLD = 30000;
+
+// Check for game win condition
+useEffect(() => {
+  if (credits >= WIN_THRESHOLD) {
+    setShowGameWin(true);
+    setIsAutoPlayEnabled(false);
+  }
+}, [credits]);
+```
+
+### Game Over
+
+The game ends when the player's balance reaches $0. There is no option to add more credits once the balance is depleted:
+
+```typescript
+if (credits < bet) {
+  setErrorMessage("Not enough credits! Game over.");
+  return;
+}
+```
+
+### RTP Implementation
+
+The Return to Player (RTP) is implemented in the `generateSpin` function in the slot machine engine:
+
+```typescript
+// Apply RTP adjustment
+const shouldWin = Math.random() < config.rtp;
+
+// Generate random symbols for each position based on weights
+// If shouldWin is true, we'll try to generate a winning combination
+const reelPositions = generateReelPositions(config, shouldWin);
+```
+
+The `generateReelPositions` function has been enhanced to create winning patterns based on the RTP value:
+
+```typescript
+// If preferWinning is true, we'll try to create a winning pattern
+if (preferWinning && Math.random() < 0.7) {
+  // Choose a random payline
+  const paylineIndex = Math.floor(Math.random() * config.paylines.length);
+  const payline = config.paylines[paylineIndex];
+  
+  // Choose a random symbol (preferring higher value symbols)
+  const symbolPool = config.symbols
+    .filter(s => !s.isScatter)
+    .sort((a, b) => {
+      // Higher RTP means more chance of higher value symbols
+      const rtpFactor = Math.min(config.rtp * 2, 1);
+      if (Math.random() < rtpFactor) {
+        return b.payout[3] - a.payout[3];
+      }
+      return 0;
+    });
+  
+  // Place winning symbols on the chosen payline
+  // ...
+}
+```
 
 ## Adding New Features
 
@@ -214,6 +294,12 @@ Global state is managed in the `App` component and passed down to child componen
 1. Update the `theme` object in the `SlotConfig` type
 2. Add UI controls in the `SlotBuilder` component to customize the new theme option
 3. Update the `SlotMachine` component to apply the new theme option
+
+### Modifying Game Mechanics
+
+1. To change the starting balance, update the initial value in the `credits` state in `SlotMachine.tsx`
+2. To change the win threshold, update the `WIN_THRESHOLD` constant in `SlotMachine.tsx`
+3. To modify the RTP implementation, update the logic in `generateSpin` and `generateReelPositions` functions
 
 ## Testing
 
@@ -250,64 +336,54 @@ import App from '../src/App';
 test('creating and playing a slot machine', async () => {
   render(<App />);
   
-  // Navigate to create page
+  // Navigate to slot builder
   fireEvent.click(screen.getByText('Create New Slot'));
   
-  // Fill in slot details
-  fireEvent.change(screen.getByLabelText('Slot Name:'), {
-    target: { value: 'Test Slot' }
-  });
+  // Fill in slot machine details
+  // ...
   
-  // Save the slot
+  // Save slot machine
   fireEvent.click(screen.getByText('Save Slot Machine'));
   
-  // Navigate to directory
-  fireEvent.click(screen.getByText('Game Directory'));
+  // Play the slot machine
+  fireEvent.click(screen.getByText('Play Now'));
   
-  // Verify slot appears in directory
-  expect(screen.getByText('Test Slot')).toBeInTheDocument();
+  // Verify starting balance
+  expect(screen.getByText('Credits: 1000')).toBeInTheDocument();
+  
+  // Place a bet and spin
+  fireEvent.click(screen.getByText('SPIN'));
+  
+  // Verify balance changes
+  // ...
 });
 ```
 
 ## Performance Considerations
 
-### Animation Optimization
-
-The slot machine animations can be performance-intensive. Consider these optimizations:
-
-- Use CSS transitions and animations where possible
-- Use `requestAnimationFrame` for JavaScript animations
-- Implement virtualization for large lists of symbols or games
-- Use the `React.memo` HOC to prevent unnecessary re-renders
-
-### Local Storage Limitations
-
-Be mindful of localStorage limitations:
-
-- Storage is limited to about 5MB per domain
-- Use compression techniques for large datasets
-- Implement cleanup mechanisms to remove old or unused data
+- **Animation Optimization**: Use CSS transitions and transforms for smooth animations
+- **Memoization**: Use React.memo and useMemo to prevent unnecessary re-renders
+- **Lazy Loading**: Implement lazy loading for components that aren't immediately needed
+- **Asset Optimization**: Minimize CSS and JavaScript files for production builds
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Animations not working smoothly**
-   - Check for unnecessary re-renders
-   - Use Chrome DevTools Performance tab to identify bottlenecks
-   - Consider reducing animation complexity
+1. **Slot machine not spinning**
+   - Check if `isSpinning` state is stuck
+   - Verify that animation timeouts are clearing properly
 
-2. **localStorage errors**
-   - Check if localStorage is available (may be disabled in private browsing)
-   - Handle storage quota exceeded errors
-   - Implement fallback mechanisms
+2. **Wins not calculating correctly**
+   - Debug the `calculateWinningLines` function
+   - Check that symbol IDs match between configuration and result
 
-3. **Symbol rendering issues**
-   - Ensure emoji compatibility across browsers
-   - Consider using SVG icons as a fallback
+3. **RTP not working as expected**
+   - Verify the implementation in `generateSpin` and `generateReelPositions`
+   - Test with different RTP values to ensure it affects win frequency
 
-### Debugging Tips
+4. **Game win condition not triggering**
+   - Check the `useEffect` dependency array for the win condition
+   - Verify that `credits` state is updating correctly
 
-- Use React DevTools to inspect component state and props
-- Add console logging for complex calculations
-- Use Chrome DevTools to debug animations and performance issues 
+For more complex issues, use browser developer tools to debug state changes and component rendering. 

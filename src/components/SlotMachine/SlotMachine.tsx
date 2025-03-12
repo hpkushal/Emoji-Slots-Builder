@@ -29,6 +29,10 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState<string | null>(null);
   const [showShareOptions, setShowShareOptions] = useState(false);
+  const [showGameWin, setShowGameWin] = useState(false);
+  
+  // Win threshold
+  const WIN_THRESHOLD = 30000;
   
   // Refs for DOM elements
   const reelsRef = useRef<HTMLDivElement>(null);
@@ -71,6 +75,14 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
     }
   }, [autoSpinCount, isSpinning, isAutoPlayEnabled, credits, bet]);
 
+  // Check for game win condition
+  useEffect(() => {
+    if (credits >= WIN_THRESHOLD) {
+      setShowGameWin(true);
+      setIsAutoPlayEnabled(false);
+    }
+  }, [credits]);
+
   /**
    * Handles the spin action
    * - Deducts bet from credits
@@ -89,7 +101,7 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
     if (isSpinning) return;
     
     if (credits < bet) {
-      setErrorMessage("Not enough credits! Add more credits to continue playing.");
+      setErrorMessage("Not enough credits! Game over.");
       return;
     }
     
@@ -178,14 +190,6 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
     }
   };
 
-  /**
-   * Adds more credits to the player's balance
-   */
-  const handleAddCredits = () => {
-    setCredits(prev => prev + 1000);
-    setErrorMessage(null);
-  };
-  
   /**
    * Toggles autoplay on/off
    */
@@ -340,12 +344,14 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
           <div className="rules-content">
             <p>Welcome to {config.name}! Here's how to play:</p>
             <ol>
+              <li>You start with $1,000 in credits.</li>
               <li>Select your bet amount using the bet buttons or predefined bet tabs.</li>
               <li>Click the SPIN button to start the game.</li>
               <li>Match 3 or more identical symbols on a payline to win.</li>
               <li>Wild symbols ({config.symbols.find(s => s.isWild)?.emoji || '⭐'}) substitute for any symbol except Scatter.</li>
               <li>Scatter symbols ({config.symbols.find(s => s.isScatter)?.emoji || '🎁'}) trigger free spins when 3 or more appear.</li>
               <li>Jackpot symbols ({config.symbols.find(s => s.isJackpot)?.emoji || '💰'}) on a payline award the jackpot prize.</li>
+              <li>Reach $30,000 in credits to win the game!</li>
             </ol>
             <p>Good luck and have fun!</p>
           </div>
@@ -427,9 +433,11 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
           <div className="how-to-play-content">
             <h3>Getting Started</h3>
             <ol>
+              <li>You start with $1,000 in credits.</li>
               <li>Choose your bet amount using the predefined bet tabs or the + and - buttons.</li>
               <li>Click the SPIN button to start the game.</li>
               <li>You can also use Auto Play to spin automatically.</li>
+              <li>Reach $30,000 in credits to win the game!</li>
             </ol>
             
             <h3>Understanding Paylines</h3>
@@ -588,13 +596,7 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
         <div className="slot-info">
           <div className="credits">
             Credits: {credits}
-            <button 
-              className="add-credits-button"
-              onClick={handleAddCredits}
-              title="Add 1000 credits"
-            >
-              +
-            </button>
+            {/* Only show add credits button if credits > 0 */}
           </div>
           
           {/* Last Win Display */}
@@ -754,6 +756,16 @@ const SlotMachine: React.FC<SlotMachineProps> = ({ config, onWin, onSpin }) => {
           <h2>JACKPOT!!!</h2>
           <p>You've won the maximum prize of ${(bet * 1000).toFixed(2)}!</p>
           <button onClick={closeJackpot}>Continue Playing</button>
+        </div>
+      )}
+      
+      {/* Game Win Celebration */}
+      {showGameWin && (
+        <div className="game-win-celebration">
+          <h2>🎉 CONGRATULATIONS! 🎉</h2>
+          <p>You've reached ${WIN_THRESHOLD.toFixed(2)} and won the game!</p>
+          <p>Your final balance: ${credits.toFixed(2)}</p>
+          <button onClick={() => window.location.reload()}>Play Again</button>
         </div>
       )}
     </div>

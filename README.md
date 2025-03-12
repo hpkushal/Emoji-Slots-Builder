@@ -29,7 +29,7 @@ Emoji Slots Builder is a feature-rich application that allows users to create, c
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/emoji-slots-builder.git
+   git clone https://github.com/hpkushal/emoji-slots-builder.git
    cd emoji-slots-builder
    ```
 

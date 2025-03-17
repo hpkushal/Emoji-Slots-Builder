@@ -2,7 +2,6 @@
 
 A modern, interactive web application for creating and playing custom slot machine games with emojis.
 
-![Emoji Slots Builder](docs/images/emoji-slots-builder-preview.png)
 
 ## 🎮 Overview
 
